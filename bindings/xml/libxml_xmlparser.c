@@ -717,7 +717,15 @@ dom_exception xml_parser_add_element_node(dom_xml_parser *parser,
 			strlen((const char *) child->ns->prefix) : 0) +
 			(child->ns->prefix != NULL ? 1 : 0) /* ':' */ +
 			strlen((const char *) child->name);
-		uint8_t qnamebuf[qnamelen + 1 /* '\0' */];
+
+		if (qnamelen > 511) {
+			parser->msg(DOM_MSG_CRITICAL,
+				    parser->mctx,
+				    "Name too long");
+			goto cleanup;
+		}
+
+		uint8_t qnamebuf[511 + 1 /* '\0' */];
 
 		/* Create namespace DOM string */
 		err = dom_string_create(
@@ -809,7 +817,15 @@ dom_exception xml_parser_add_element_node(dom_xml_parser *parser,
 				strlen((const char *) a->ns->prefix) : 0) +
 				(a->ns->prefix != NULL ? 1 : 0) /* ':' */ +
 				strlen((const char *) a->name);
-			uint8_t qnamebuf[qnamelen + 1 /* '\0' */];
+
+			if (qnamelen > 511) {
+				parser->msg(DOM_MSG_CRITICAL,
+					    parser->mctx,
+					    "Name too long");
+				goto cleanup;
+			}
+
+			uint8_t qnamebuf[511 + 1 /* '\0' */];
 
 			/* Create namespace DOM string */
 			err = dom_string_create(
